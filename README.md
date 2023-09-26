@@ -3,6 +3,11 @@
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.2.2.
 
 ## First things first
+
+Run command `npm i --save-dev @types/jquery` to install jquery.
+
+## Install node_modules
+
 Run `npm install` to install node_modules
 
 ## Development server
