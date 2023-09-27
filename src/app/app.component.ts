@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Employee } from './employee';
 import { Address } from './address';
 import { EmployeeRegistrationService } from './employee-registration.service';
-import { NgForm } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +18,19 @@ export class AppComponent {
   modalTitleStyleClass = "";
   modalBody = "";
   modalStyleClass = "";
+  employeeForm = new FormGroup({
+    name: new FormControl('Aman'),
+    phoneNumber: new FormControl(''),
+    gender: new FormControl(''),
+    profile: new FormControl(''),
+    docsCheck: new FormControl(''),
+    address: new FormGroup({
+      houseNumber: new FormControl(''),
+      city: new FormControl(''),
+      pinCode: new FormControl('')
+    })
+  });
+
   constructor(private _employeeRegistrationService:EmployeeRegistrationService){}
   
   validateProfile(value:string){
@@ -30,8 +43,8 @@ export class AppComponent {
     this.profileHasError = !found;
   }
 
-  submit(employeeForm?:NgForm){
-    console.log(employeeForm)
+  submit(){
+    console.log(this.employeeForm)
     this.formData.push(this.employeeModel);
     this._employeeRegistrationService.registerEmployee(this.employeeModel)
         .subscribe(
