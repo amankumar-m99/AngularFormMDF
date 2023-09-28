@@ -23,7 +23,7 @@ export class AppComponent {
     phoneNumber: new FormControl(''),
     gender: new FormControl(''),
     profile: new FormControl(''),
-    docsCheck: new FormControl(''),
+    docsCheck: new FormControl(false),
     address: new FormGroup({
       houseNumber: new FormControl(''),
       city: new FormControl(''),
@@ -67,5 +67,29 @@ export class AppComponent {
             // console.log("Error!", error);
           }
         );
+  }
+  setData(){
+    this.employeeForm.setValue({
+      name: 'Aman',
+      phoneNumber: '8566953776',
+      gender: 'Male',
+      profile: 'Developer',
+      docsCheck: false,
+      address: {
+        houseNumber: '411',
+        city: 'Noida',
+        pinCode: '201301'
+      }
+    });
+  }
+  patchData(){
+    this.employeeForm.patchValue({
+      name: 'Aman',
+      phoneNumber: '8566953776',
+      address: {
+        city: 'Noida',
+        pinCode: '201301'
+      }
+    });
   }
 }
