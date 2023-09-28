@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { Employee } from './employee';
 import { Address } from './address';
 import { EmployeeRegistrationService } from './employee-registration.service';
-import { FormControl, FormGroup } from '@angular/forms';
+// import { FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -18,20 +19,37 @@ export class AppComponent {
   modalTitleStyleClass = "";
   modalBody = "";
   modalStyleClass = "";
-  employeeForm = new FormGroup({
-    name: new FormControl('Aman'),
-    phoneNumber: new FormControl(''),
-    gender: new FormControl(''),
-    profile: new FormControl(''),
-    docsCheck: new FormControl(false),
-    address: new FormGroup({
-      houseNumber: new FormControl(''),
-      city: new FormControl(''),
-      pinCode: new FormControl('')
-    })
-  });
+  // employeeForm = new FormGroup({
+  //   name: new FormControl('Aman'),
+  //   phoneNumber: new FormControl(''),
+  //   gender: new FormControl(''),
+  //   profile: new FormControl(''),
+  //   docsCheck: new FormControl(false),
+  //   address: new FormGroup({
+  //     houseNumber: new FormControl(''),
+  //     city: new FormControl(''),
+  //     pinCode: new FormControl('')
+  //   })
+  // });
+  employeeForm:FormGroup;
 
-  constructor(private _employeeRegistrationService:EmployeeRegistrationService){}
+  constructor(
+    private _employeeRegistrationService:EmployeeRegistrationService,
+    private formBuilder:FormBuilder
+    ){
+      this.employeeForm = this.formBuilder.group({
+        name: ['Aman K', Validators.required],
+        phoneNumber: [''],
+        gender: [''],
+        profile: [''],
+        docsCheck: [false],
+        address: this.formBuilder.group({
+          houseNumber: [''],
+          city: [''],
+          pinCode: ['']
+        })
+      });
+    }
   
   validateProfile(value:string){
     let found = false;
@@ -70,11 +88,11 @@ export class AppComponent {
   }
   setData(){
     this.employeeForm.setValue({
-      name: 'Aman',
+      name: 'Aman Kumar',
       phoneNumber: '8566953776',
-      gender: 'Male',
+      gender: 'male',
       profile: 'Developer',
-      docsCheck: false,
+      docsCheck: true,
       address: {
         houseNumber: '411',
         city: 'Noida',
