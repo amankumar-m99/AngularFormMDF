@@ -1,107 +1,148 @@
 <h2 class="text-center">Employee Registration Form - Model Driven Form (MDF) aka Reactive Form</h2>
 <div class="container">
-  <form [formGroup]="employeeForm"
+  <form [formGroup]="employeeForm" (ngSubmit)="submit()" novalidate
     style="border: 1px solid black; padding: 10px 50px; background-color: aliceblue;">
     <div class="container">
-      <!-- <hr/>
       {{ employeeForm.value | json }}
       <hr/>
-      {{ employeeModel | json }}
-      <hr/> -->
     </div>
+
     <div class="mb-3">
       <label for="name" class="form-label">Name</label>
-      <input type="text" class="form-control" id="name" name="name" aria-describedby="emailHelp"
+      <input type="text" id="name" class="form-control" aria-describedby="emailHelp"
       formControlName="name" [class.is-invalid]="employeeForm.get('name')?.invalid && employeeForm.get('name')?.touched"/>
-      <div id="nameHelp" class="form-text small text-danger" [class.d-none]="employeeForm.get('name')?.valid || employeeForm.get('name')?.untouched">Name is required</div>
+      <div *ngIf="employeeForm.get('name')?.invalid && employeeForm.get('name')?.touched">
+        <div id="name-help-req" *ngIf="employeeForm.get('name')?.hasError('required')" class="form-text small text-danger">Name is required</div>
+        <div id="name-help-minlength" *ngIf="employeeForm.get('name')?.hasError('minlength')" class="form-text small text-danger">
+          Name should be exactly at least two letters long
+        </div>
+        <div id="name-help-forbiddenName" *ngIf="employeeForm.get('name')?.hasError('forbiddenName')" class="form-text small text-danger">
+          The name {{employeeForm.get('name')?.getError('forbiddenName').value}} is not allowed
+        </div>
+      </div>
     </div>
+
     <div class="mb-3">
       <label for="phone-number" class="form-label">Phone Number</label>
-      <!-- <input type="text" class="form-control" id="name" name="name" aria-describedby="emailHelp" ngModel /> -->
-      <input formControlName="phoneNumber" type="text" class="form-control" id="phone-number" name="phoneNumber" aria-describedby="emailHelp"/>
-      <!-- <div *ngIf="phoneNumber.errors && (phoneNumber.invalid && phoneNumber.touched)">
-        <div id="phone-number-help-req" *ngIf="phoneNumber.errors['required']" class="form-text small text-danger">Phone number is required</div>
-        <div id="phone-number-help-dig" *ngIf="phoneNumber.errors['pattern']" class="form-text small text-danger">Phone number should be exactly ten digits long</div>
-      </div> -->
+      <input type="text" id="phone-number" class="form-control" aria-describedby="emailHelp"
+        formControlName="phoneNumber" [class.is-invalid]="phoneNum?.invalid && phoneNum?.touched">
+      <div *ngIf="phoneNum?.errors && (phoneNum?.invalid && phoneNum?.touched)">
+        <div id="phone-number-help-req" *ngIf="phoneNum?.hasError('required')" class="form-text small text-danger">Phone number is required</div>
+        <div id="phone-number-help-dig" *ngIf="phoneNum?.hasError('pattern')" class="form-text small text-danger">Phone number should be exactly ten digits long</div>
+      </div>
     </div>
+
+    <div class="mb-3">
+      <button type="button" class="btn btn-secondary btn-sm m-2" (click)="addAlternatePhoneNum()">Add Alternate Phone</button>
+    </div>
+
+    <div formArrayName="alternatePhoneNumbers" *ngFor="let phNum of alternatePhoneNums.controls; let i=index">
+      <div class="mb-3">
+        <label class="form-label">Phone Number {{i+2}} </label>
+        <input type="text" class="form-control" aria-describedby="emailHelp" [formControlName]="i">
+      </div>
+    </div>
+
     <div class="mb-3">
       <label for="gender" class="form-label">Gender</label>
-      <div id="genderHelp" class="form-text small text-danger">Gender is required</div>
+      <div id="genderHelp" class="form-text small text-danger" [class.d-none]="gender?.valid || gender?.untouched">Gender is required</div>
       <div class="form-check">
-        <input formControlName="gender" class="form-check-input" type="radio" id="male" name="gender" value="male"/>
+        <input type="radio" id="male" class="form-check-input" value="male"
+        formControlName="gender" [class.is-invalid]="gender?.invalid && gender?.touched" />
         <label class="form-check-label" for="male">Male</label>
       </div>
       <div class="form-check">
-        <input formControlName="gender" class="form-check-input" type="radio" id="female" name="gender" value="female"/>
+        <input type="radio" id="female" class="form-check-input" value="female"
+        formControlName="gender" [class.is-invalid]="gender?.invalid && gender?.touched" />
         <label class="form-check-label" for="female">Female</label>
       </div>
     </div>
+    
     <div class="mb-3">
-      <select formControlName="profile" class="form-select" aria-label="Default select example" name="profile">
+      <select class="form-select" aria-label="Default select" name="profile"
+      (blur)="validateProfile()" (change)="validateProfile()"
+        formControlName="profile" [class.is-invalid]="profileHasError && profile?.touched">
         <option value = "" disabled>--Profile of Employee--</option>
         <option *ngFor = "let profile of employeeProfiles" [value] = "profile">{{profile}}</option>
       </select>
-      <div id="profileHelp" class="form-text small text-danger">Please choose the profile of employee</div>
+      <div id="profileHelp" class="form-text small text-danger"
+      [class.d-none]="!profileHasError || profile?.untouched">Please choose the profile of employee</div>
     </div>
+    
     <div class="mb-3 form-check">
-      <input formControlName="docsCheck" type="checkbox" class="form-check-input" id="docsCheck" name="docsCheck"/>
+      <input type="checkbox" id="docsCheck" class="form-check-input"
+        formControlName="docsCheck" [class.is-invalid]="employeeForm.hasError('invalidCheck') && profile?.touched" />
       <label class="form-check-label" for="docsCheck">Docs Incomplete</label>
-      <div id="docsCheckHelp" class="form-text small text-danger">This is required</div>
+      <div id="docsCheckHelp" class="form-text small text-danger"
+        [class.d-none]="!employeeForm.hasError('invalidCheck')">Docs check mandatory for this profile
+      </div>
     </div>
+    =| {{employeeForm.hasError('invalidCheck')}} |=
     <div formGroupName="address">
       <div class="mb-3">
         <label for="house-number" class="form-label">House Number</label>
-        <input formControlName="houseNumber" type="text" class="form-control" id="house-number" name="house-number" aria-describedby="emailHelp"/>
-          <div id="house-numberHelp" class="form-text small text-danger">House number is required</div>
+        <input type="text" id="house-number" class="form-control" aria-describedby="emailHelp"
+          formControlName="houseNumber" [class.is-invalid]="houseNum?.invalid && houseNum?.touched" />
+          <div id="house-numberHelp" class="form-text small text-danger"
+            [class.d-none]="houseNum?.valid || houseNum?.untouched">House number is required</div>
       </div>
+
       <div class="mb-3">
         <label for="city" class="form-label">City</label>
-        <input formControlName="city" type="text" class="form-control" id="city" name="city" aria-describedby="emailHelp"/>
-          <div id="cityHelp" class="form-text small text-danger">City is required</div>
+        <input type="text" id="city" class="form-control" aria-describedby="emailHelp"
+          formControlName="city" [class.is-invalid]="city?.invalid && city?.touched" />
+          <div id="cityHelp" class="form-text small text-danger"
+              [class.d-none]="city?.valid || city?.untouched">City is required</div>
       </div>
+
       <div class="mb-3">
-        <label for="pin-code" class="form-label">PIN Code</label>
-        <input formControlName="pinCode" type="text" class="form-control" id="pin-code" name="pin-code" aria-describedby="emailHelp"/>
-          <!-- <div *ngIf="pincode.errors && (pincode.invalid && pincode.touched)">
-            <div id="pin-code-Help-req" *ngIf="pincode.errors['required']" class="form-text small text-danger">PIN code is required</div>
-            <div id="pin-code-Help-dig" *ngIf="pincode.errors['pattern']" class="form-text small text-danger">PIN code should be exactly six digits long</div>
-          </div> -->
+        <label for="pincode" class="form-label">PIN Code</label>
+        <input type="text" id="pincode" class="form-control" aria-describedby="emailHelp"
+            formControlName="pinCode" [class.is-invalid]="pinCode?.invalid && pinCode?.touched"/>
+          <div *ngIf="pinCode?.errors && (pinCode?.invalid && pinCode?.touched)">
+            <div id="pin-code-Help-req" *ngIf="pinCode?.hasError('required')" class="form-text small text-danger">PIN code is required</div>
+            <div id="pin-code-Help-dig" *ngIf="pinCode?.hasError('pattern')" class="form-text small text-danger">PIN code should be exactly six digits long</div>
+          </div>
       </div>
     </div>
-    <button type="submit" class="btn btn-primary" (click)="submit()">Submit</button>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
     <button type="button" class="btn btn-secondary" (click)="setData()">Set Value</button>
     <button type="button" class="btn btn-secondary" (click)="patchData()">Patch Value</button>
   </form>
-  <hr/>
-  {{employeeForm.value|json}}
-  <hr/>
+
   <h2 class="text-center">List of Employees</h2>
   <div style="border: 1px solid black; padding: 10px; margin:10px;">
     <table  class="table table-success table-striped">
       <thead>
         <tr>
           <th>Name</th>
-          <th>gender</th>
-          <th>profile</th>
-          <th>docsCheck</th>
-          <th>city</th>
-          <th>pincode</th>
+          <th>Phone Number</th>
+          <th>Gender</th>
+          <th>Profile</th>
+          <th>DocsCheck</th>
+          <th>House Number</th>
+          <th>City</th>
+          <th>PIN Code</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let item of formData">
           <td>{{item.name|titlecase}}</td>
+          <td>{{item.phoneNumber}}</td>
           <td>{{item.gender|titlecase}}</td>
           <td>{{item.profile|titlecase}}</td>
           <td>{{item.docsCheck}}</td>
+          <td>{{item.address.houseNumber}}</td>
           <td>{{item.address.city|titlecase}}</td>
-          <td>{{item.address.pincode}}</td>
+          <td>{{item.address.pinCode}}</td>
         </tr>
       </tbody>
     </table>
   </div>
 </div>
 <hr>
+
 <!-- Modal -->
 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
   <div class="modal-dialog">
