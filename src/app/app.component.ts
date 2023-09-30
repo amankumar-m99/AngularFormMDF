@@ -3,7 +3,7 @@ import { Employee } from './employee';
 import { Address } from './address';
 import { EmployeeRegistrationService } from './employee-registration.service';
 // import { FormControl, FormGroup } from '@angular/forms';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Form, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { forbiddenNameValidator } from './shared/employee-name.validator';
 import { docsValidator } from './shared/docs-validator';
 import { dummyValidator } from './shared/dummy.validator';
@@ -15,7 +15,6 @@ import { dummyValidator } from './shared/dummy.validator';
 })
 export class AppComponent {
   employeeProfiles = ["Developer", "Tester", "Bussiness Analyst", "Manager"];
-  employeeModel = new Employee("","","",false, new Address("", "", ""));
   profileHasError = true;
   formData:any = [];
   modalTitle = "";
@@ -70,7 +69,16 @@ export class AppComponent {
     console.log(this.employeeForm);
     // console.log(this.employeeForm.errors);
     this.formData.push(this.employeeForm.getRawValue());
-    this._employeeRegistrationService.registerEmployee(this.employeeModel)
+    let name:string = this.employeeName?.getRawValue();
+    let phone:string = this.phoneNum?.getRawValue();
+    let gender:string = this.gender?.getRawValue();
+    let profile:string = this.profile?.getRawValue();
+    let docs:boolean = this.docsCheck?.getRawValue();
+    let houseNo:string = this.houseNum?.getRawValue();
+    let city:string = this.city?.getRawValue();
+    let pin:string = this.pinCode?.getRawValue();
+    let employeeModel = new Employee(name,phone,gender,profile,false, new Address(city,houseNo,pin));
+    this._employeeRegistrationService.registerEmployee(employeeModel)
         .subscribe(
           data=>{
             this.modalTitle="Success";
@@ -94,9 +102,14 @@ export class AppComponent {
   }
 
   setData(){
+    let arr:FormArray = this.formBuilder.array([
+      this.formBuilder.control('')
+    ]);
+    // arr.push(this.formBuilder.control(''));
     this.employeeForm.setValue({
       name: 'Aman Kumar',
       phoneNumber: '8566953776',
+      alternatePhoneNums: arr,
       gender: 'male',
       profile: 'Developer',
       docsCheck: true,
@@ -118,7 +131,10 @@ export class AppComponent {
     });
   }
   addAlternatePhoneNum(){
-    this.alternatePhoneNums.push(this.formBuilder.control(''));
+    this.alternatePhoneNums.push(this.formBuilder.control('', Validators.required));
+  }
+  deletePhoneNumber(i:number){
+    this.alternatePhoneNums.removeAt(i);
   }
 
   get employeeName(){

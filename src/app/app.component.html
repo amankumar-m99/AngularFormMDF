@@ -1,10 +1,11 @@
 <h2 class="text-center">Employee Registration Form - Model Driven Form (MDF) aka Reactive Form</h2>
 <div class="container">
+  <hr/>
+  {{ employeeForm.value | json }}
+  <hr/>
   <form [formGroup]="employeeForm" (ngSubmit)="submit()" novalidate
     style="border: 1px solid black; padding: 10px 50px; background-color: aliceblue;">
     <div class="container">
-      {{ employeeForm.value | json }}
-      <hr/>
     </div>
 
     <div class="mb-3">
@@ -24,22 +25,36 @@
 
     <div class="mb-3">
       <label for="phone-number" class="form-label">Phone Number</label>
-      <input type="text" id="phone-number" class="form-control" aria-describedby="emailHelp"
-        formControlName="phoneNumber" [class.is-invalid]="phoneNum?.invalid && phoneNum?.touched">
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" aria-describedby="phoneNumber"
+          formControlName="phoneNumber" [class.is-invalid]="phoneNum?.invalid && phoneNum?.touched" />
+        <span class="input-group-text text-primary form-control-action-button" id="alternatePhoneNumber" [class.d-none]="alternatePhoneNums.length > 0">
+          <i class="bi bi-plus-lg" (click)="addAlternatePhoneNum()"></i></span>
+      </div>
       <div *ngIf="phoneNum?.errors && (phoneNum?.invalid && phoneNum?.touched)">
         <div id="phone-number-help-req" *ngIf="phoneNum?.hasError('required')" class="form-text small text-danger">Phone number is required</div>
         <div id="phone-number-help-dig" *ngIf="phoneNum?.hasError('pattern')" class="form-text small text-danger">Phone number should be exactly ten digits long</div>
       </div>
     </div>
-
-    <div class="mb-3">
-      <button type="button" class="btn btn-secondary btn-sm m-2" (click)="addAlternatePhoneNum()">Add Alternate Phone</button>
-    </div>
-
+    
     <div formArrayName="alternatePhoneNumbers" *ngFor="let phNum of alternatePhoneNums.controls; let i=index">
-      <div class="mb-3">
-        <label class="form-label">Phone Number {{i+2}} </label>
-        <input type="text" class="form-control" aria-describedby="emailHelp" [formControlName]="i">
+      <label class="form-label">Phone Number {{i+2}} </label>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" aria-describedby="alternatePhoneNumber"
+          [formControlName]="i" [class.is-invalid]="phNum.invalid && phNum.touched"/>
+        <span class="input-group-text text-danger form-control-action-button" id="alternatePhoneNumber" data-bs-toggle="tooltip" data-bs-placement="top"
+        data-bs-custom-class="custom-tooltip"
+        data-bs-title="This top tooltip is themed via CSS variables.">
+          <i class="bi bi-trash" (click)="deletePhoneNumber(i)"></i></span>
+        <span class="input-group-text text-primary form-control-action-button" id="alternatePhoneNumber" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Add one more phone number"
+          [class.d-none]="i != alternatePhoneNums.length-1">
+          <i class="bi bi-plus-lg" (click)="addAlternatePhoneNum()"></i></span>
+      </div>
+      <div>
+        <span *ngIf="phNum?.errors && (phNum?.invalid && phNum?.touched)">
+          <div *ngIf="phNum?.hasError('required')" class="form-text small text-danger">Phone number is required</div>
+          <div *ngIf="phNum?.hasError('pattern')" class="form-text small text-danger">Phone number should be exactly ten digits long</div>
+        </span>
       </div>
     </div>
 

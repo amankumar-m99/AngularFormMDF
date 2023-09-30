@@ -14,6 +14,10 @@ Run `npm install` to install node_modules
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
+## Server on LAN
+
+Run `ng serve --host 0.0.0.0` or `ng serve --host <your ip>` to serve application on local network
+
 ## Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.

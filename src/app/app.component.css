@@ -1,0 +1,6 @@
+.form-control-action-button {
+    font-weight: bolder;
+}
+.form-control-action-button:hover {
+    cursor: pointer;
+}

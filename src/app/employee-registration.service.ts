@@ -9,7 +9,8 @@ import { catchError } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class EmployeeRegistrationService {
-  _url = "http://localhost:3000/register";
+  // _url = "http://localhost:3000/register";
+  _url = "https://kanbanfire-27682-default-rtdb.firebaseio.com/employee.json";
   constructor(private _httpClient:HttpClient) { }
 
   registerEmployee(employee:Employee):Observable<Employee>{
